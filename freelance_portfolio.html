@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gokul | Freelance Web Developer</title>
+
+<!-- jQuery library loaded from Google's CDN (needs internet) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<style>
+  /* ===== 1. THEME COLOURS (change these to restyle the whole site) ===== */
+  :root {
+    --bg: #fbf8f3;
+    --ink: #1d2b3a;
+    --muted: #5d6b7a;
+    --card: #ffffff;
+    --line: #e3ddd2;
+    --accent: #0f766e;
+  }
+  body.dark {
+    --bg: #14202b;
+    --ink: #f1ece2;
+    --muted: #a9b4bf;
+    --card: #1d2d3b;
+    --line: #2f4153;
+    --accent: #5eead4;
+  }
+
+  /* ===== 2. BASE ===== */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: auto; }
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    transition: background .4s, color .4s;
+  }
+  h1, h2, h3, nav, button, .tag, label, input, select, textarea {
+    font-family: "Trebuchet MS", Verdana, sans-serif;
+  }
+  section { max-width: 1000px; margin: 0 auto; padding: 80px 20px 40px; }
+  h2 { font-size: 1.9rem; margin-bottom: 8px; }
+  .sub { color: var(--muted); margin-bottom: 28px; max-width: 60ch; }
+
+  /* ===== 3. NAVBAR ===== */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); border-bottom: 1px solid var(--line);
+  }
+  nav {
+    max-width: 1000px; margin: 0 auto; padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .logo { font-weight: bold; font-size: 1.2rem; }
+  .links a {
+    color: var(--ink); text-decoration: none; margin-left: 18px; padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+  }
+  .links a:hover, .links a.active { border-bottom-color: var(--accent); }
+  .menu-btn { display: none; }
+
+  /* ===== 4. BUTTONS ===== */
+  button, .btn {
+    background: var(--accent); color: #fff; border: none; cursor: pointer;
+    padding: 10px 20px; border-radius: 6px; font-size: .95rem; text-decoration: none; display: inline-block;
+  }
+  body.dark button, body.dark .btn { color: #0b1a22; }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--accent); outline-offset: 2px;
+  }
+
+  /* ===== 5. HERO ===== */
+  #hero { padding-top: 70px; }
+  #hero h1 { font-size: clamp(2.2rem, 6vw, 3.8rem); line-height: 1.15; margin-bottom: 14px; }
+  #typed { color: var(--accent); }
+  #hero p { max-width: 55ch; color: var(--muted); margin-bottom: 24px; }
+  .hero-actions button, .hero-actions .btn { margin-right: 10px; margin-bottom: 10px; }
+
+  /* ===== 6. SKILLS ===== */
+  .skill { margin-bottom: 18px; }
+  .skill-head { display: flex; justify-content: space-between; font-family: "Trebuchet MS", sans-serif; }
+  .bar { height: 10px; background: var(--line); border-radius: 6px; overflow: hidden; margin-top: 6px; }
+  .fill { height: 100%; width: 0; background: var(--accent); }
+
+  /* ===== 7. PROJECTS ===== */
+  .filters { margin-bottom: 20px; }
+  .filters button { margin: 0 6px 8px 0; }
+  .filters button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  body.dark .filters button.on { color: #0b1a22; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+  .project { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .thumb { height: 120px; display: flex; align-items: center; justify-content: center; color: #fff; font: bold 1.3rem "Trebuchet MS", sans-serif; }
+  .p-body { padding: 16px; }
+  .p-body h3 { margin-bottom: 6px; }
+  .tag { font-size: .8rem; color: var(--accent); }
+  .details { display: none; margin-top: 10px; color: var(--muted); font-size: .95rem; }
+  .more { margin-top: 12px; padding: 6px 12px; font-size: .85rem; }
+
+  /* ===== 8. PRICING / QUOTE CALCULATOR ===== */
+  .quote { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+  .field { flex: 1 1 220px; display: flex; flex-direction: column; }
+  label { font-weight: bold; margin-bottom: 4px; font-size: .9rem; }
+  input, select, textarea {
+    padding: 10px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--ink); font-size: 1rem;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  #total {
+    margin-top: 18px; padding: 14px; background: var(--accent); color: #fff;
+    border-radius: 6px; font: bold 1.2rem "Trebuchet MS", sans-serif; display: none;
+  }
+  body.dark #total { color: #0b1a22; }
+
+  /* ===== 9. TESTIMONIALS ===== */
+  .slider { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 28px; min-height: 150px; }
+  .slide { display: none; font-size: 1.1rem; }
+  .slide span { display: block; margin-top: 10px; font: bold .9rem "Trebuchet MS", sans-serif; color: var(--accent); }
+  .slider-btns { margin-top: 12px; }
+
+  /* ===== 10. FAQ ===== */
+  .faq-q { width: 100%; text-align: left; background: var(--card); color: var(--ink); border: 1px solid var(--line); margin-top: 8px; }
+  body.dark .faq-q { color: var(--ink); }
+  .faq-a { display: none; padding: 12px 16px; color: var(--muted); border: 1px solid var(--line); border-top: none; background: var(--card); }
+
+  /* ===== 11. CONTACT FORM + FOOTER ===== */
+  #msg { margin-top: 14px; padding: 12px; border-radius: 6px; display: none; }
+  #msg.ok { background: #d1fae5; color: #064e3b; }
+  #msg.err { background: #fee2e2; color: #7f1d1d; }
+  footer { text-align: center; padding: 30px 20px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 50px; }
+
+  #toTop { position: fixed; right: 20px; bottom: 20px; display: none; }
+
+  /* ===== 12. MOBILE ===== */
+  @media (max-width: 640px) {
+    .menu-btn { display: inline-block; }
+    .links { display: none; width: 100%; }
+    .links a { display: block; margin: 8px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER / NAVIGATION ================= -->
+<header>
+  <nav>
+    <div class="logo">Gokul.dev</div>
+    <button class="menu-btn ghost" id="menuBtn" aria-label="Toggle menu">Menu</button>
+    <div class="links" id="links">
+      <a href="#hero">Home</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#contact">Contact</a>
+      <button class="ghost" id="themeBtn" style="margin-left:14px;padding:6px 12px;">Dark mode</button>
+    </div>
+  </nav>
+</header>
+
+<!-- ================= HERO ================= -->
+<section id="hero">
+  <h1>I build <span id="typed">websites</span> for small businesses.</h1>
+  <p>Freelance web developer from Tamil Nadu. I turn rough ideas into fast, clean sites that are easy to update and easy for customers to use.</p>
+  <div class="hero-actions">
+    <a href="#projects" class="btn">See my work</a>
+    <a href="#pricing" class="btn" style="background:transparent;color:var(--ink);border:1px solid var(--line);">Get a price estimate</a>
+  </div>
+</section>
+
+<!-- ================= SKILLS ================= -->
+<section id="skills">
+  <h2>Skills</h2>
+  <p class="sub">The bars fill when you scroll here.</p>
+  <div id="skillList"></div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section id="projects">
+  <h2>Projects</h2>
+  <p class="sub">Filter by type, then open a card to read more.</p>
+
+  <div class="filters">
+    <button class="on" data-filter="all">All</button>
+    <button class="ghost" data-filter="web">Websites</button>
+    <button class="ghost" data-filter="app">Web apps</button>
+    <button class="ghost" data-filter="shop">Online shops</button>
+  </div>
+
+  <div class="grid">
+    <article class="project" data-cat="web">
+      <div class="thumb" style="background:#0f766e">Bakery Site</div>
+      <div class="p-body">
+        <h3>Sweet Crumbs Bakery</h3><span class="tag">Website</span>
+        <button class="more ghost">Show details</button>
+        <div class="details">A four-page site with a menu, gallery and a map. Orders grew after the new site went live.</div>
+      </div>
+    </article>
+
+    <article class="project" data-cat="shop">
+      <div class="thumb" style="background:#b45309">Saree Store</div>
+      <div class="p-body">
+        <h3>Kanchi Weaves</h3><span class="tag">Online shop</span>
+        <button class="more ghost">Show details</button>
+        <div class="details">Product catalogue with a cart, size filter and WhatsApp checkout for local customers.</div>
+      </div>
+    </article>
+
+    <article class="project" data-cat="app">
+      <div class="thumb" style="background:#1d4ed8">Study Planner</div>
+      <div class="p-body">
+        <h3>Spaced Study Planner</h3><span class="tag">Web app</span>
+        <button class="more ghost">Show details</button>
+        <div class="details">A flashcard app that schedules reviews so students revise just before they forget.</div>
+      </div>
+    </article>
+
+    <article class="project" data-cat="web">
+      <div class="thumb" style="background:#7e22ce">Clinic Site</div>
+      <div class="p-body">
+        <h3>Green Leaf Clinic</h3><span class="tag">Website</span>
+        <button class="more ghost">Show details</button>
+        <div class="details">Appointment request form, doctor profiles and a page that works well on phones.</div>
+      </div>
+    </article>
+
+    <article class="project" data-cat="app">
+      <div class="thumb" style="background:#be123c">Budget Tool</div>
+      <div class="p-body">
+        <h3>Budget Calculator</h3><span class="tag">Web app</span>
+        <button class="more ghost">Show details</button>
+        <div class="details">Splits a monthly amount into rent, savings and other costs by percentage.</div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= PRICING / QUOTE CALCULATOR ================= -->
+<section id="pricing">
+  <h2>Price estimate</h2>
+  <p class="sub">Choose what you need and get an instant estimate. Prices are in rupees.</p>
+  <div class="quote">
+    <div class="row">
+      <div class="field">
+        <label for="pages">Number of pages (Rs. 1,500 each)</label>
+        <input type="number" id="pages" min="1" value="3">
+      </div>
+      <div class="field">
+        <label for="type">Site type</label>
+        <select id="type">
+          <option value="0">Simple website (+Rs. 0)</option>
+          <option value="4000">Online shop (+Rs. 4,000)</option>
+          <option value="6000">Custom web app (+Rs. 6,000)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <label><input type="checkbox" class="extra" value="1000"> Logo design (Rs. 1,000)</label>
+      <label><input type="checkbox" class="extra" value="800"> SEO setup (Rs. 800)</label>
+      <label><input type="checkbox" class="extra" value="1200"> Contact form (Rs. 1,200)</label>
+    </div>
+    <button id="calc">Calculate estimate</button>
+    <div id="total"></div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section id="reviews">
+  <h2>Client reviews</h2>
+  <p class="sub">Use the buttons to move between reviews.</p>
+  <div class="slider">
+    <div class="slide">"The site was ready in a week and customers started calling the same day."<span>Meena, Sweet Crumbs Bakery</span></div>
+    <div class="slide">"Clear communication and fair pricing. Updates were quick."<span>Arun, Kanchi Weaves</span></div>
+    <div class="slide">"Our patients now book from their phones. It just works."<span>Dr. Priya, Green Leaf Clinic</span></div>
+  </div>
+  <div class="slider-btns">
+    <button class="ghost" id="prev">Previous</button>
+    <button class="ghost" id="next">Next</button>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq">
+  <h2>Questions</h2>
+  <button class="faq-q">How long does a project take?</button>
+  <div class="faq-a">A simple site takes about one week. Shops and apps take two to four weeks.</div>
+  <button class="faq-q">How do payments work?</button>
+  <div class="faq-a">Half upfront, half when you approve the finished site.</div>
+  <button class="faq-q">Can I edit the site myself later?</button>
+  <div class="faq-a">Yes. I show you how to change text and images, and I stay available for help.</div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact">
+  <h2>Start a project</h2>
+  <p class="sub">Tell me what you need. I reply within one working day.</p>
+  <div class="quote">
+    <div class="row">
+      <div class="field"><label for="name">Name</label><input type="text" id="name"></div>
+      <div class="field"><label for="email">Email</label><input type="text" id="email"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label for="message">Project details <span id="count" style="font-weight:normal;color:var(--muted);">(0 / 300)</span></label>
+      <textarea id="message" maxlength="300"></textarea>
+    </div>
+    <button id="send">Send message</button>
+    <div id="msg"></div>
+  </div>
+</section>
+
+<footer>&copy; <span id="year"></span> Gokul. Built with HTML, CSS and jQuery.</footer>
+
+<button id="toTop" aria-label="Back to top">Top</button>
+
+<script>
+/* All jQuery code runs after the page has loaded */
+$(document).ready(function () {
+
+  /* ---------- 1. Footer year: .text() ---------- */
+  $('#year').text(new Date().getFullYear());
+
+  /* ---------- 2. Typing words in the hero: .fadeOut() / .fadeIn() ---------- */
+  var words = ['websites', 'web apps', 'online shops', 'landing pages'];
+  var w = 0;
+  setInterval(function () {
+    w = (w + 1) % words.length;
+    $('#typed').fadeOut(300, function () {
+      $(this).text(words[w]).fadeIn(300);
+    });
+  }, 2500);
+
+  /* ---------- 3. Dark mode: .toggleClass() ---------- */
+  $('#themeBtn').click(function () {
+    $('body').toggleClass('dark');
+    $(this).text($('body').hasClass('dark') ? 'Light mode' : 'Dark mode');
+  });
+
+  /* ---------- 4. Mobile menu: .slideToggle() ---------- */
+  $('#menuBtn').click(function () { $('#links').slideToggle(250); });
+
+  /* ---------- 5. Smooth scrolling: .animate() ---------- */
+  $('.links a, .hero-actions a').click(function (e) {
+    e.preventDefault();
+    var target = $($(this).attr('href'));
+    $('html, body').animate({ scrollTop: target.offset().top - 60 }, 600);
+    if ($(window).width() <= 640) { $('#links').slideUp(200); }
+  });
+
+  /* ---------- 6. Skills built from an array: .each() and .append() ---------- */
+  var skills = [
+    { name: 'HTML and CSS', level: 90 },
+    { name: 'JavaScript and jQuery', level: 80 },
+    { name: 'Responsive design', level: 85 },
+    { name: 'Python and Flask', level: 70 }
+  ];
+  $.each(skills, function (i, s) {
+    $('#skillList').append(
+      '<div class="skill"><div class="skill-head"><span>' + s.name + '</span><span>' + s.level +
+      '%</span></div><div class="bar"><div class="fill" data-level="' + s.level + '"></div></div></div>'
+    );
+  });
+
+  /* ---------- 7. Scroll events: fill bars once, show/hide Top button, highlight nav ---------- */
+  var barsDone = false;
+  $(window).scroll(function () {
+    var pos = $(window).scrollTop();
+
+    // Back to top button
+    if (pos > 400) { $('#toTop').fadeIn(); } else { $('#toTop').fadeOut(); }
+
+    // Fill skill bars when the section is visible
+    if (!barsDone && pos + $(window).height() > $('#skills').offset().top + 150) {
+      barsDone = true;
+      $('.fill').each(function () {
+        $(this).animate({ width: $(this).data('level') + '%' }, 1000);
+      });
+    }
+
+    // Highlight the current section in the menu
+    $('section').each(function () {
+      var top = $(this).offset().top - 120;
+      if (pos >= top && pos < top + $(this).outerHeight()) {
+        $('.links a').removeClass('active');
+        $('.links a[href="#' + this.id + '"]').addClass('active');
+      }
+    });
+  });
+  $('#toTop').click(function () { $('html, body').animate({ scrollTop: 0 }, 500); });
+
+  /* ---------- 8. Project filter: .show() / .hide() ---------- */
+  $('.filters button').click(function () {
+    $('.filters button').removeClass('on').addClass('ghost');
+    $(this).addClass('on').removeClass('ghost');
+    var f = $(this).data('filter');
+    if (f === 'all') { $('.project').fadeIn(300); }
+    else {
+      $('.project').hide();
+      $('.project[data-cat="' + f + '"]').fadeIn(300);
+    }
+  });
+
+  /* ---------- 9. Project details: .slideToggle() and .text() ---------- */
+  $('.more').click(function () {
+    var box = $(this).siblings('.details');
+    box.slideToggle(250);
+    $(this).text(box.is(':visible') ? 'Show details' : 'Hide details');
+  });
+
+  /* ---------- 10. Price calculator (like the cake order exercise) ---------- */
+  $('#calc').click(function () {
+    var pages = parseInt($('#pages').val());
+    if (isNaN(pages) || pages < 1) {
+      alert('Please enter at least 1 page.');
+      return;
+    }
+    var total = pages * 1500 + parseInt($('#type').val());
+    $('.extra:checked').each(function () { total += parseInt($(this).val()); });
+    $('#total').html('Estimated price: Rs. ' + total.toLocaleString('en-IN')).slideDown(250);
+  });
+
+  /* ---------- 11. Testimonial slider ---------- */
+  var cur = 0, slides = $('.slide');
+  slides.eq(0).show();
+  function go(n) {
+    slides.eq(cur).fadeOut(200, function () {
+      cur = (n + slides.length) % slides.length;
+      slides.eq(cur).fadeIn(200);
+    });
+  }
+  $('#next').click(function () { go(cur + 1); });
+  $('#prev').click(function () { go(cur - 1); });
+
+  /* ---------- 12. FAQ accordion: close others, open this one ---------- */
+  $('.faq-q').click(function () {
+    var answer = $(this).next('.faq-a');
+    $('.faq-a').not(answer).slideUp(200);
+    answer.slideToggle(200);
+  });
+
+  /* ---------- 13. Live character counter: keyup event ---------- */
+  $('#message').keyup(function () {
+    $('#count').text('(' + $(this).val().length + ' / 300)');
+  });
+
+  /* ---------- 14. Contact form validation ---------- */
+  $('#send').click(function () {
+    var name = $.trim($('#name').val());
+    var email = $.trim($('#email').val());
+    var message = $.trim($('#message').val());
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    var box = $('#msg');
+
+    if (name === '' || message === '') {
+      box.attr('class', 'err').text('Please fill in your name and project details.').slideDown(200);
+    } else if (!emailOk) {
+      box.attr('class', 'err').text('Please enter a valid email address.').slideDown(200);
+    } else {
+      box.attr('class', 'ok').text('Thanks ' + name + '! Your message is ready to send. I will reply soon.').slideDown(200);
+      $('#name, #email, #message').val('');
+      $('#count').text('(0 / 300)');
+    }
+  });
+
+});
+</script>
+</body>
+</html>
